@@ -5,7 +5,7 @@ You can install this bot basically deploying it into your favorite (docker) cont
 
 
 ## Naming Conventions
-1. Pull requests should be to the new branch named `Feture_[YourAmazingFeature]`
+1. Pull requests should be to the new branch named `feature_[your_amazing_feature]`
 2. Create merge requests into the `dev` branch that is going to be used as upstream to the `♂master♂` branch
 3. Follow this https://google.github.io/styleguide/javaguide.html
 
