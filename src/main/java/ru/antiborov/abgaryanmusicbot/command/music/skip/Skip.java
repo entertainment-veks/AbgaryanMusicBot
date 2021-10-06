@@ -2,6 +2,7 @@ package ru.antiborov.abgaryanmusicbot.command.music.skip;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,13 @@ public class Skip implements SlashCommand {
         this.guildMusicManagerFactory = guildMusicManagerFactory;
     }
 
-    @SuppressWarnings("ConstantConditions") // Command is Guild Only
     @Override
     public void process(SlashCommandEvent event) {
         GuildMusicManager manager = guildMusicManagerFactory.getInstance(event);
         AudioPlayer audioPlayer = manager.getAudioPlayer();
 
-        AudioTrack track = manager.getTrackScheduler().nextTrack();
+        manager.getTrackScheduler().onTrackEnd(audioPlayer, audioPlayer.getPlayingTrack(), AudioTrackEndReason.FINISHED);
+        AudioTrack track = audioPlayer.getPlayingTrack();
         if (track == null) {
             event.reply("queue has ended").queue();
             return;
