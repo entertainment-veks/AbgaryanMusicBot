@@ -18,10 +18,9 @@ public class Repeat implements SlashCommand {
         this.guildMusicManagerFactory = guildMusicManagerFactory;
     }
 
-    @SuppressWarnings("ConstantConditions") // Command is Guild Only
     @Override
     public void process(SlashCommandEvent event) {
-        GuildMusicManager guildMusicManager = guildMusicManagerFactory.getInstance(event.getGuild().getId());
+        GuildMusicManager guildMusicManager = guildMusicManagerFactory.getInstance(event);
         TrackScheduler trackScheduler = guildMusicManager.getTrackScheduler();
         trackScheduler.setRepeat(!trackScheduler.isRepeat());
         event.reply(trackScheduler.isRepeat()
