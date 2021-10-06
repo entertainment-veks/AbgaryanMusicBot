@@ -1,7 +1,8 @@
-package ru.antiborov.abgaryanmusicbot.command.music.queue;
+package ru.antiborov.abgaryanmusicbot.command.music.shortcut;
 
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.springframework.stereotype.Component;
+import ru.antiborov.abgaryanmusicbot.command.music.Queue;
 import ru.antiborov.abgaryanmusicbot.domain.music.factory.GuildMusicManagerFactory;
 
 import static ru.antiborov.abgaryanmusicbot.command.music.Commands.QUEUE;

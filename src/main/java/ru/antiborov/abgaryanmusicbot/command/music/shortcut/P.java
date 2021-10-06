@@ -1,10 +1,10 @@
-package ru.antiborov.abgaryanmusicbot.command.music.play;
+package ru.antiborov.abgaryanmusicbot.command.music.shortcut;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.antiborov.abgaryanmusicbot.command.music.Commands;
+import ru.antiborov.abgaryanmusicbot.command.music.Play;
 import ru.antiborov.abgaryanmusicbot.domain.music.factory.GuildMusicManagerFactory;
 
 import static ru.antiborov.abgaryanmusicbot.command.music.Commands.PLAY;
