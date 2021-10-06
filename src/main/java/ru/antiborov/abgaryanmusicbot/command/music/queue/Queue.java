@@ -1,4 +1,4 @@
-package ru.antiborov.abgaryanmusicbot.command.music;
+package ru.antiborov.abgaryanmusicbot.command.music.queue;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
