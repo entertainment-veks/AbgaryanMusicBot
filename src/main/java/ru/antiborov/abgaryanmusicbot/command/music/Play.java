@@ -38,16 +38,13 @@ public class Play implements SlashCommand {
     @SuppressWarnings("ConstantConditions")
     @Override
     public void process(SlashCommandEvent event) {
-        GuildMusicManager manager = guildMusicManagerFactory.getInstance(event.getGuild().getId());
+        GuildMusicManager manager = guildMusicManagerFactory.getInstance(event);
         String audioID;
 
         assert event.getSubcommandName() != null;
 
         // We ignore these warnings since parameters are required and semantics of null check is obsolete
         switch (event.getSubcommandName()) {
-            case "youtube":
-                audioID = RemotePrefixes.YOUTUBE.prefix + event.getOption("title").getAsString();
-                break;
             case "soundcloud":
                 audioID = RemotePrefixes.SOUNDCLOUD.prefix + event.getOption("title").getAsString();
                 break;
@@ -55,7 +52,8 @@ public class Play implements SlashCommand {
                 audioID = event.getOption("url").getAsString();
                 break;
             default:
-                throw new UnsupportedOperationException();
+                audioID = RemotePrefixes.YOUTUBE.prefix + event.getOption("title").getAsString();
+                break;
         }
 
         // Obtaining Member's Voice Channel and doing quick check
@@ -73,6 +71,11 @@ public class Play implements SlashCommand {
     public CommandData getCommandData() {
         return new CommandData("play", getDescription())
                 .addSubcommands(
+                        new SubcommandData("", "search via youtube")
+                                .addOption(OptionType.STRING,
+                                        "title",
+                                        "le youtube video title",
+                                        true),
                         new SubcommandData("youtube", "search via youtube")
                                 .addOption(OptionType.STRING,
                                         "title",

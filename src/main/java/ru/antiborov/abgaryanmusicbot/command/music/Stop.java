@@ -20,7 +20,7 @@ public class Stop implements SlashCommand {
     @SuppressWarnings("ConstantConditions") // Command is Guild Only
     @Override
     public void process(SlashCommandEvent event) {
-        GuildMusicManager manager = guildMusicManagerFactory.getInstance(event.getGuild().getId());
+        GuildMusicManager manager = guildMusicManagerFactory.getInstance(event);
         manager.getAudioPlayer().stopTrack();
         event.getGuild().getAudioManager().closeAudioConnection();
         event.reply("stopped the player and left voice channel").queue();
