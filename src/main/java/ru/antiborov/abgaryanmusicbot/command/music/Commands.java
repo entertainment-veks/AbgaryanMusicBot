@@ -3,6 +3,7 @@ package ru.antiborov.abgaryanmusicbot.command.music;
 public enum Commands {
     PLAY("play", "p"),
     QUEUE("queue", "q"),
+    REPEAT("repeat", "r"),
     SKIP("skip", "s"),
     PAUSE("pause", ""),
     STOP("stop", "");
