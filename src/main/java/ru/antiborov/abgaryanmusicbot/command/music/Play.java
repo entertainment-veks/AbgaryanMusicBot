@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.extern.java.Log;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -60,6 +61,8 @@ public class Play implements SlashCommand {
         // Requires CacheFlag.VOICE_STATE to be Enabled
         VoiceChannel voiceChannel = event.getMember().getVoiceState().getChannel();
         if (voiceChannel == null) {
+            EmbedBuilder eb = new EmbedBuilder();
+
             event.reply("You're not in a voice channel").queue();
             return;
         }
