@@ -25,18 +25,11 @@ public class CommandManager extends ListenerAdapter {
                 .stream()
                 .dropWhile(entry -> !event.getName().equals(entry.getKey()))
                 .findFirst()
-                .ifPresentOrElse(
-                        entry -> {
-                            SlashCommand command = entry.getValue();
-                            if (command.isGuildOnly() && event.getGuild() == null) {
-                                event.reply("this command is guild only").queue();
-                                return;
-                            }
-                            log.fine("Processing slash command " + entry.getClass().getSimpleName()
-                                    + " with " + event.getOptions());
-                            command.process(event);
-                        },
-                        () -> event.reply("Command not found").queue() // TODO: Not possible?
-                );
+                .ifPresent(entry -> {
+                    SlashCommand command = entry.getValue();
+                    log.fine(String.format("Processing slash command %s with %s",
+                            entry.getClass().getSimpleName(), event.getOptions()));
+                    command.process(event);
+                });
     }
 }
