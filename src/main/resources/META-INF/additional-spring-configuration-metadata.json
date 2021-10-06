@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "jda.token",
+      "type": "java.lang.String",
+      "description": "JDA Secret Bot Token."
+  }
+] }
