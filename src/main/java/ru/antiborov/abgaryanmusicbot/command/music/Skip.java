@@ -22,7 +22,7 @@ public class Skip implements SlashCommand {
     @SuppressWarnings("ConstantConditions") // Command is Guild Only
     @Override
     public void process(SlashCommandEvent event) {
-        GuildMusicManager manager = guildMusicManagerFactory.getInstance(event);
+        GuildMusicManager manager = guildMusicManagerFactory.getInstance(event.getGuild().getId());
         AudioPlayer audioPlayer = manager.getAudioPlayer();
 
         AudioTrack track = manager.getTrackScheduler().nextTrack();

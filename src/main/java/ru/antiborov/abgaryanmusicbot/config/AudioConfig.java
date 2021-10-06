@@ -15,7 +15,14 @@ public class AudioConfig {
     @Bean
     public AudioPlayerManager audioPlayerManager() {
         AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
-
+        //        Methods for custom configuration
+        //        playerManager.setFrameBufferDuration();
+        //        playerManager.setHttpBuilderConfigurator();
+        //        playerManager.setHttpRequestConfigurator();
+        //        playerManager.setPlayerCleanupThreshold();
+        //        playerManager.setItemLoaderThreadPoolSize();
+        //        playerManager.setTrackStuckThreshold();
+        //        playerManager.setUseSeekGhosting();
         // Register Built-In sources for tracks
         AudioSourceManagers.registerRemoteSources(playerManager);
         return playerManager;

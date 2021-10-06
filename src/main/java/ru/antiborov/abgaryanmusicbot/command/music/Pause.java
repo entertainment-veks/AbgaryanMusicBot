@@ -20,7 +20,7 @@ public class Pause implements SlashCommand {
 
     @Override
     public void process(SlashCommandEvent event) {
-        GuildMusicManager guildMusicManager = guildMusicManagerFactory.getInstance(event);
+        GuildMusicManager guildMusicManager = guildMusicManagerFactory.getInstance(event.getGuild().getId());
         AudioPlayer player = guildMusicManager.getAudioPlayer();
         if (player.getPlayingTrack() == null) {
             player.setPaused(false);

@@ -24,7 +24,7 @@ public class Queue implements SlashCommand {
     @SuppressWarnings("ConstantConditions") // Command is Guild Only
     @Override
     public void process(SlashCommandEvent event) {
-        GuildMusicManager manager = guildMusicManagerFactory.getInstance(event);
+        GuildMusicManager manager = guildMusicManagerFactory.getInstance(event.getGuild().getId());
         AudioTrack current_track = manager.getAudioPlayer().getPlayingTrack();
         if (current_track == null) {
             event.reply("Queue is empty and nothing is currently playing").queue();

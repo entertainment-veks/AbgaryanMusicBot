@@ -1,10 +1,8 @@
 package ru.antiborov.abgaryanmusicbot.domain.music.factory;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
-import net.dv8tion.jda.internal.interactions.CommandInteractionImpl;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;
+import ru.antiborov.abgaryanmusicbot.annotation.Internal;
 import ru.antiborov.abgaryanmusicbot.domain.music.GuildMusicManager;
 
 import java.util.Map;
@@ -18,16 +16,16 @@ import java.util.function.Supplier;
  There is not a big need in that and this is justified by the KISS Principle
  */
 @Component
-@SuppressWarnings("ConstantConditions")
 public class GuildMusicManagerFactory {
     private final Map<String, GuildMusicManager> cache = new ConcurrentHashMap<>();
 
     @Lookup
+    @Internal
     public GuildMusicManager getGuildMusicManager() {
         return null;
     }
-    public GuildMusicManager getInstance(CommandInteraction event) {
-        String guildId = event.getGuild().getId();
+
+    public GuildMusicManager getInstance(String guildId) {
         return ((Supplier<GuildMusicManager>) () -> {
             if (cache.containsKey(guildId))
                 return cache.get(guildId);

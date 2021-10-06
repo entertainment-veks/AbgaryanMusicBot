@@ -10,5 +10,4 @@
       "type": "java.lang.Integer",
       "description": "Byte Buffer size for the AudioPlayerSendHandler."
     }
-  ]
-}
+  ] }
