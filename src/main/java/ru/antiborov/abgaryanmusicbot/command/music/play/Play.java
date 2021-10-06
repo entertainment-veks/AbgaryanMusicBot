@@ -1,4 +1,4 @@
-package ru.antiborov.abgaryanmusicbot.command.music;
+package ru.antiborov.abgaryanmusicbot.command.music.play;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;

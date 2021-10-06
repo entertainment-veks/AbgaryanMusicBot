@@ -1,4 +1,4 @@
-package ru.antiborov.abgaryanmusicbot.command.music;
+package ru.antiborov.abgaryanmusicbot.command.music.skip;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;

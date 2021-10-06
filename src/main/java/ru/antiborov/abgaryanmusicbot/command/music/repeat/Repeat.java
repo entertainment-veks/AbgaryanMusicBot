@@ -1,4 +1,4 @@
-package ru.antiborov.abgaryanmusicbot.command.music;
+package ru.antiborov.abgaryanmusicbot.command.music.repeat;
 
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -8,6 +8,7 @@ import ru.antiborov.abgaryanmusicbot.command.SlashCommand;
 import ru.antiborov.abgaryanmusicbot.domain.music.GuildMusicManager;
 import ru.antiborov.abgaryanmusicbot.domain.music.TrackScheduler;
 import ru.antiborov.abgaryanmusicbot.domain.music.factory.GuildMusicManagerFactory;
+import static ru.antiborov.abgaryanmusicbot.command.music.Commands.REPEAT;
 
 @Component("repeat")
 public class Repeat implements SlashCommand {
@@ -30,7 +31,7 @@ public class Repeat implements SlashCommand {
 
     @Override
     public CommandData getCommandData() {
-        return new CommandData("repeat", getDescription());
+        return new CommandData(REPEAT.fullName, getDescription());
     }
 
     @Override
