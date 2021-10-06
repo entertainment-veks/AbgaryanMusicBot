@@ -35,3 +35,6 @@ build/
 /mvnw
 /mvnw.cmd
 /.mvn/
+
+### Spring Properties ###
+/src/main/resources/*.properties

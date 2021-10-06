@@ -4,5 +4,10 @@
       "name": "jda.token",
       "type": "java.lang.String",
       "description": "JDA Secret Bot Token."
-  }
-] }
+    },
+    {
+      "name": "abgaryan.audio.byte_buffer_size",
+      "type": "java.lang.Integer",
+      "description": "Byte Buffer size for the AudioPlayerSendHandler."
+    }
+  ] }
