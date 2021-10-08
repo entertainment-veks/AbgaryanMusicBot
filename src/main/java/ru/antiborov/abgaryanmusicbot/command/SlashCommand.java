@@ -6,7 +6,11 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 public interface SlashCommand {
     void process(SlashCommandEvent event);
 
-    CommandData getCommandData();
+    default CommandData getCommandData() {
+        return new CommandData(getName(), getDescription());
+    }
+
+    String getName();
 
     String getDescription();
 

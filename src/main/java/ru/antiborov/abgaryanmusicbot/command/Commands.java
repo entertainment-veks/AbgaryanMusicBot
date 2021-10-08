@@ -1,18 +1,18 @@
-package ru.antiborov.abgaryanmusicbot.command.music;
+package ru.antiborov.abgaryanmusicbot.command;
 
 public enum Commands {
     PLAY("play", "p"),
     QUEUE("queue", "q"),
     REPEAT("repeat", "r"),
     SKIP("skip", "s"),
-    PAUSE("pause", ""),
-    STOP("stop", "");
+    PAUSE("pause", null),
+    STOP("stop", null);
 
     public final String fullName;
-    public final String shorCut;
+    public final String shortCut;
 
     Commands(String fullName, String shortCut) {
         this.fullName = fullName;
-        this.shorCut = shortCut;
+        this.shortCut = shortCut;
     }
 }

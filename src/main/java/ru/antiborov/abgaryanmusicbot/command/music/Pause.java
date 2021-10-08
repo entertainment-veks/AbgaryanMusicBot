@@ -2,14 +2,15 @@ package ru.antiborov.abgaryanmusicbot.command.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.antiborov.abgaryanmusicbot.command.SlashCommand;
 import ru.antiborov.abgaryanmusicbot.domain.music.GuildMusicManager;
 import ru.antiborov.abgaryanmusicbot.domain.music.factory.GuildMusicManagerFactory;
 
-@Component("pause")
+import static ru.antiborov.abgaryanmusicbot.command.Commands.PAUSE;
+
+@Component
 public class Pause implements SlashCommand {
     private final GuildMusicManagerFactory guildMusicManagerFactory;
 
@@ -33,8 +34,8 @@ public class Pause implements SlashCommand {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("pause", getDescription());
+    public String getName() {
+        return PAUSE.fullName;
     }
 
     @Override

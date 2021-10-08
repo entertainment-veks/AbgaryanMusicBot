@@ -1,7 +1,7 @@
 package ru.antiborov.abgaryanmusicbot.config;
 
 
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.hooks.EventListener;
@@ -19,7 +19,7 @@ import java.util.Map;
  * <p>
  * This class configures the JDA client for further interaction and processing
  */
-@Log
+@Log4j2
 @Configuration
 public class JDAConfig {
     // We are declaring eventListeners as an array because .addEventListeners(...) uses varargs and to prevent extra
@@ -52,9 +52,9 @@ public class JDAConfig {
         jda.awaitReady();
         // Registering commands for each guild TODO: Move this behaviour to the "dev" profile
         jda.getGuilds().forEach(guild -> {
-            log.severe(guild.getName());
+            log.debug(guild.getName());
             commands.forEach((key, value) -> guild.upsertCommand(value.getCommandData()).queue());
-            guild.retrieveCommands().complete().stream().map(Object::toString).forEach(log::severe);
+            guild.retrieveCommands().complete().stream().map(Object::toString).forEach(log::debug);
         });
         return jda;
     }

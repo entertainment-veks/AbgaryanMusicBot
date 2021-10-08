@@ -5,12 +5,13 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,10 +20,14 @@ import ru.antiborov.abgaryanmusicbot.domain.music.GuildMusicManager;
 import ru.antiborov.abgaryanmusicbot.domain.music.RemotePrefixes;
 import ru.antiborov.abgaryanmusicbot.domain.music.factory.GuildMusicManagerFactory;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.stream.Collectors;
 
-@Log
-@Component("play")
+import static ru.antiborov.abgaryanmusicbot.command.Commands.PLAY;
+
+@Log4j2
+@Component
 public class Play implements SlashCommand {
 
     private final AudioPlayerManager audioManager;
@@ -39,21 +44,24 @@ public class Play implements SlashCommand {
     @Override
     public void process(SlashCommandEvent event) {
         GuildMusicManager manager = guildMusicManagerFactory.getInstance(event);
+        OptionMapping sourceMapping = event.getOption("source");
+        String title = event.getOption("title").getAsString();
         String audioID;
 
-        assert event.getSubcommandName() != null;
+        try {
+            // Just doing a trivial URL check. Regexes will be much slower and adding Apache Commons for only this
+            // use case is kinda strange imho
+            new URL(title);
+            audioID = title;
+        } catch (MalformedURLException ignored) {
+            String source;
+            if (sourceMapping == null)
+                // If there is no source and not a URL was passed then we will search from YouTube
+                source = RemotePrefixes.YOUTUBE.prefix;
+            else
+                source = sourceMapping.getAsString();
 
-        // We ignore these warnings since parameters are required and semantics of null check is obsolete
-        switch (event.getSubcommandName()) {
-            case "soundcloud":
-                audioID = RemotePrefixes.SOUNDCLOUD.prefix + event.getOption("title").getAsString();
-                break;
-            case "url":
-                audioID = event.getOption("url").getAsString();
-                break;
-            default:
-                audioID = RemotePrefixes.YOUTUBE.prefix + event.getOption("title").getAsString();
-                break;
+            audioID = source + title;
         }
 
         // Obtaining Member's Voice Channel and doing quick check
@@ -67,30 +75,19 @@ public class Play implements SlashCommand {
         audioManager.loadItemOrdered(manager, audioID, new AudioLoadResultHandlerImpl(event, voiceChannel, manager));
     }
 
-    // DRY?
     public CommandData getCommandData() {
-        return new CommandData("play", getDescription())
-                .addSubcommands(
-                        new SubcommandData("", "search via youtube")
-                                .addOption(OptionType.STRING,
-                                        "title",
-                                        "le youtube video title",
-                                        true),
-                        new SubcommandData("youtube", "search via youtube")
-                                .addOption(OptionType.STRING,
-                                        "title",
-                                        "le youtube video title",
-                                        true),
-                        new SubcommandData("soundcloud", "search via soundcloud")
-                                .addOption(OptionType.STRING,
-                                        "title",
-                                        "le soundcloud song title",
-                                        true),
-                        new SubcommandData("url", "enter url to the desired track")
-                                .addOption(OptionType.STRING,
-                                        "url",
-                                        "le url",
-                                        true));
+        return SlashCommand.super.getCommandData()
+                .addOptions(
+                        new OptionData(OptionType.STRING, "title", "URL or Audio Title", true),
+                        new OptionData(OptionType.STRING, "source", "Search Engine", false)
+                                .addChoice("YouTube", RemotePrefixes.YOUTUBE.prefix)
+                                .addChoice("SoundCloud", RemotePrefixes.SOUNDCLOUD.prefix)
+                );
+    }
+
+    @Override
+    public String getName() {
+        return PLAY.fullName;
     }
 
     @Override
@@ -123,7 +120,7 @@ public class Play implements SlashCommand {
         @SuppressWarnings("ConstantConditions") // Command is Guild Only
         @Override
         public void trackLoaded(AudioTrack track) {
-            log.fine("Loaded track: " + track.toString());
+            log.debug("Loaded track: " + track.toString());
             AudioManager audioManager = event.getGuild().getAudioManager();
             audioManager.openAudioConnection(voiceChannel);
             audioManager.setSendingHandler(manager.getSendHandler());
@@ -134,8 +131,8 @@ public class Play implements SlashCommand {
         @Override
         public void playlistLoaded(AudioPlaylist playlist) {
             // TODO: Playlist handling and different subcommand for processing these kinds of requests
-            log.fine("Playlist loaded");
-            log.finest(playlist
+            log.debug("Playlist loaded");
+            log.debug(playlist
                     .getTracks()
                     .stream()
                     .map(t -> t.getInfo().title)
@@ -146,13 +143,13 @@ public class Play implements SlashCommand {
 
         @Override
         public void noMatches() {
-            log.fine("No matches");
+            log.debug("No matches");
             event.reply("no matches").queue();
         }
 
         @Override
         public void loadFailed(FriendlyException exception) {
-            log.warning("Encountered exception: " + exception.toString());
+            log.warn("Encountered exception: " + exception.toString());
             event.reply("Encountered exception " + exception).queue();
         }
     }

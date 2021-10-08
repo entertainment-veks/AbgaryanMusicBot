@@ -1,8 +1,6 @@
 package ru.antiborov.abgaryanmusicbot.domain.music.factory;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
-import net.dv8tion.jda.internal.interactions.CommandInteractionImpl;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;
 import ru.antiborov.abgaryanmusicbot.domain.music.GuildMusicManager;
@@ -26,6 +24,7 @@ public class GuildMusicManagerFactory {
     public GuildMusicManager getGuildMusicManager() {
         return null;
     }
+
     public GuildMusicManager getInstance(CommandInteraction event) {
         String guildId = event.getGuild().getId();
         return ((Supplier<GuildMusicManager>) () -> {
