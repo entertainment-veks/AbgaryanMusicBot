@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import ru.antiborov.abgaryanmusicbot.command.SlashCommand;
 import ru.antiborov.abgaryanmusicbot.domain.music.GuildMusicManager;
 import ru.antiborov.abgaryanmusicbot.domain.music.factory.GuildMusicManagerFactory;
+import ru.antiborov.abgaryanmusicbot.embed.templates.QueueEmbed;
+import ru.antiborov.abgaryanmusicbot.util.SourceColors;
 
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -25,26 +27,16 @@ public class Queue implements SlashCommand {
     @Override
     public void process(SlashCommandEvent event) {
         GuildMusicManager manager = guildMusicManagerFactory.getInstance(event);
-        AudioTrack current_track = manager.getAudioPlayer().getPlayingTrack();
-        if (current_track == null) {
-            event.reply("Queue is empty and nothing is currently playing").queue();
-            return;
-        }
+        AudioTrack currentTrack = manager.getAudioPlayer().getPlayingTrack();
 
-        event.reply("Currently " + (manager.getAudioPlayer().isPaused() ? "paused" : "playing") + ": "
-                + trackFormatter(current_track) + "\n"
-                + manager.getTrackScheduler()
-                .getQueueAsStream()
-                .map(this::trackFormatter)
-                .collect(Collectors.joining("\n"))).queue();
-    }
-
-    // TODO: Move to QueueEmbedFactory
-    @Deprecated
-    private String trackFormatter(AudioTrack track) {
-        return "Track: " + track.getInfo().title
-                + " by " + track.getInfo().author
-                + " from " + track.getSourceManager().getSourceName().toUpperCase(Locale.ROOT);
+        event.reply("")
+                .addEmbeds(new QueueEmbed(
+                        currentTrack,
+                        manager.getTrackScheduler().getQueueAsStream().collect(Collectors.toList()),
+                        SourceColors.determineColor(currentTrack),
+                        manager.getAudioPlayer().isPaused())
+                        .build())
+                .queue();
     }
 
     @Override
