@@ -41,16 +41,6 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public void nextTrack() {
-        AudioTrack track = audioPlayer.getPlayingTrack();
-        switch (repeat) {
-            case SINGLE:
-                queue.offerFirst(track.makeClone());
-                break;
-            case QUEUE:
-                queue.offerLast(track.makeClone());
-                break;
-        }
-
         audioPlayer.playTrack(queue.pollFirst());
     }
 
@@ -90,6 +80,17 @@ public class TrackScheduler extends AudioEventAdapter {
      */
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        switch (repeat) {
+            case SINGLE:
+                queue.offerFirst(track.makeClone());
+                log.debug("Repeating single track {}", track.getInfo().title);
+                break;
+            case QUEUE:
+                queue.offerLast(track.makeClone());
+                log.debug("Repeating queue, added track to the end of the queue {}", track.getInfo().title);
+                break;
+        }
+
         if (endReason.mayStartNext)
             nextTrack();
 
