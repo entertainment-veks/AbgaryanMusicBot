@@ -19,6 +19,8 @@ import ru.antiborov.abgaryanmusicbot.command.SlashCommand;
 import ru.antiborov.abgaryanmusicbot.domain.music.GuildMusicManager;
 import ru.antiborov.abgaryanmusicbot.domain.music.RemotePrefixes;
 import ru.antiborov.abgaryanmusicbot.domain.music.factory.GuildMusicManagerFactory;
+import ru.antiborov.abgaryanmusicbot.embed.templates.PlayEmbed;
+import ru.antiborov.abgaryanmusicbot.util.SourceColors;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -125,7 +127,15 @@ public class Play implements SlashCommand {
             audioManager.openAudioConnection(voiceChannel);
             audioManager.setSendingHandler(manager.getSendHandler());
             manager.getTrackScheduler().queue(track);
-            event.reply("less goo " + track.getInfo().title).queue();
+            var trackInfo = track.getInfo();
+            event.reply("")
+                    .addEmbeds(new PlayEmbed(
+                            trackInfo.title,
+                            trackInfo.author,
+                            SourceColors.determineColor(track),
+                            String.format("https://img.youtube.com/vi/%s/0.jpg", track.getIdentifier()))
+                            .build())
+                    .queue();
         }
 
         @Override
