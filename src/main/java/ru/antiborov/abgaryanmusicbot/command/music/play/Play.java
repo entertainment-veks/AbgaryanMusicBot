@@ -21,6 +21,7 @@ import ru.antiborov.abgaryanmusicbot.domain.music.RemotePrefixes;
 import ru.antiborov.abgaryanmusicbot.domain.music.factory.GuildMusicManagerFactory;
 import ru.antiborov.abgaryanmusicbot.embed.templates.PlayEmbed;
 import ru.antiborov.abgaryanmusicbot.util.SourceColors;
+import ru.antiborov.abgaryanmusicbot.util.SourceThumbnail;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -77,6 +78,7 @@ public class Play implements SlashCommand {
         audioManager.loadItemOrdered(manager, audioID, new AudioLoadResultHandlerImpl(event, voiceChannel, manager));
     }
 
+    @Override
     public CommandData getCommandData() {
         return SlashCommand.super.getCommandData()
                 .addOptions(
@@ -133,7 +135,7 @@ public class Play implements SlashCommand {
                             trackInfo.title,
                             trackInfo.author,
                             SourceColors.determineColor(track),
-                            String.format("https://img.youtube.com/vi/%s/0.jpg", track.getIdentifier()))
+                            SourceThumbnail.getThumbnail(track))
                             .build())
                     .queue();
         }
