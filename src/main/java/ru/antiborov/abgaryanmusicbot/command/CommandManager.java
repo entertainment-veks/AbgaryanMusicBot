@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,14 +24,10 @@ public class CommandManager extends ListenerAdapter {
 
     @Override
     public void onSlashCommand(@NotNull SlashCommandEvent event) {
-        commands.entrySet()
-                .stream()
-                .dropWhile(entry -> !event.getName().equals(entry.getKey()))
-                .findFirst()
-                .ifPresent(entry -> {
-                    SlashCommand command = entry.getValue();
+        Optional.of(commands.get(event.getName()))
+                .ifPresent(command -> {
                     log.debug(String.format("Processing slash command %s with %s",
-                            entry.getClass().getSimpleName(), event.getOptions()));
+                            command.getName(), event.getOptions()));
                     command.process(event);
                 });
     }

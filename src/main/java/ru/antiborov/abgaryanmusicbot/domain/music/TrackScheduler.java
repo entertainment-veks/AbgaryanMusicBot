@@ -80,25 +80,24 @@ public class TrackScheduler extends AudioEventAdapter {
      */
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        switch (repeat) {
-            case SINGLE:
-                queue.offerFirst(track.makeClone());
-                log.debug("Repeating single track {}", track.getInfo().title);
-                break;
-            case QUEUE:
-                queue.offerLast(track.makeClone());
-                log.debug("Repeating queue, added track to the end of the queue {}", track.getInfo().title);
-                break;
-        }
-
-        if (endReason.mayStartNext)
-            nextTrack();
-
         log.debug(
                 "AudioPlayer track has ended with code "
                         + endReason
                         + " - "
                         + track.getInfo().uri);
+
+        if (!endReason.mayStartNext)
+            return;
+
+        if (repeat == RepeatStatus.SINGLE) {
+            queue.offerFirst(track.makeClone());
+            log.debug("Repeating single track {}", track.getInfo().title);
+        } else if (repeat == RepeatStatus.QUEUE) {
+            queue.offerLast(track.makeClone());
+            log.debug("Repeating queue, added track to the end of the queue {}", track.getInfo().title);
+        }
+
+        nextTrack();
     }
 
     /**
