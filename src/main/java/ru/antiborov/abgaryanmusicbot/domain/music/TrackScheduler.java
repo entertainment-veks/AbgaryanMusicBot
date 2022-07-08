@@ -7,37 +7,41 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.Arrays;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Stream;
 
-@Log
+@Log4j2
 @Getter
 @Setter
 public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer audioPlayer;
-    private final BlockingQueue<AudioTrack> queue;
-    private boolean repeat;
+    private final BlockingDeque<AudioTrack> queue;
+    private RepeatStatus repeat = RepeatStatus.NONE;
 
     public TrackScheduler(AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
-        this.queue = new LinkedBlockingQueue<>();
+        this.queue = new LinkedBlockingDeque<>();
     }
 
     public void queue(AudioTrack track) {
         // If something is playing - the track will be added to the queue
         if (!audioPlayer.startTrack(track, true)) {
-            this.queue.offer(track);
+            this.queue.offerLast(track);
         }
     }
 
-    public AudioTrack nextTrack() {
-        AudioTrack track = queue.poll();
-        audioPlayer.playTrack(track);
-        return track;
+    public void skip() {
+        AudioTrack currentTrack = audioPlayer.getPlayingTrack();
+        if (currentTrack != null)
+            onTrackEnd(audioPlayer, currentTrack, AudioTrackEndReason.FINISHED);
+    }
+
+    public void nextTrack() {
+        audioPlayer.playTrack(queue.pollFirst());
     }
 
     // Audio Event Handling
@@ -47,7 +51,7 @@ public class TrackScheduler extends AudioEventAdapter {
      */
     @Override
     public void onPlayerPause(AudioPlayer player) {
-        log.fine("AudioPlayer has paused playing");
+        log.debug("AudioPlayer has paused playing");
     }
 
     /**
@@ -55,7 +59,7 @@ public class TrackScheduler extends AudioEventAdapter {
      */
     @Override
     public void onPlayerResume(AudioPlayer player) {
-        log.fine("AudioPlayer has resumed playing");
+        log.debug("AudioPlayer has resumed playing");
     }
 
     /**
@@ -64,7 +68,7 @@ public class TrackScheduler extends AudioEventAdapter {
      */
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        log.fine(
+        log.debug(
                 "AudioPlayer has started playing "
                         + track.getInfo().uri);
     }
@@ -76,17 +80,24 @@ public class TrackScheduler extends AudioEventAdapter {
      */
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        if (repeat)
-            queue.offer(track.makeClone());
-
-        if (endReason.mayStartNext)
-            nextTrack();
-
-        log.fine(
+        log.debug(
                 "AudioPlayer track has ended with code "
                         + endReason
                         + " - "
                         + track.getInfo().uri);
+
+        if (!endReason.mayStartNext)
+            return;
+
+        if (repeat == RepeatStatus.SINGLE) {
+            queue.offerFirst(track.makeClone());
+            log.debug("Repeating single track {}", track.getInfo().title);
+        } else if (repeat == RepeatStatus.QUEUE) {
+            queue.offerLast(track.makeClone());
+            log.debug("Repeating queue, added track to the end of the queue {}", track.getInfo().title);
+        }
+
+        nextTrack();
     }
 
     /**
@@ -100,14 +111,14 @@ public class TrackScheduler extends AudioEventAdapter {
             case COMMON:
                 // fallthrough
             case SUSPICIOUS:
-                log.warning(
+                log.warn(
                         "AudioPlayer has encountered an exception while playing "
                                 + exception
                                 + " - "
                                 + track.getInfo().uri);
                 break;
             case FAULT:
-                log.severe(
+                log.warn(
                         "AudioPlayer has encountered a fatal exception while playing "
                                 + exception
                                 + " - "
@@ -123,7 +134,7 @@ public class TrackScheduler extends AudioEventAdapter {
      */
     @Override
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
-        log.warning(
+        log.warn(
                 "AudioPlayer has exceeded Threshold of "
                         + thresholdMs
                         + " millis on track "
@@ -132,7 +143,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
     @Override
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs, StackTraceElement[] stackTrace) {
-        log.severe(
+        log.warn(
                 "AudioPlayer has exceeded Threshold of "
                         + thresholdMs
                         + " millis on track "

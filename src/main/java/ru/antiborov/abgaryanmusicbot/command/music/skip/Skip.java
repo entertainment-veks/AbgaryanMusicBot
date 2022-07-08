@@ -2,16 +2,16 @@ package ru.antiborov.abgaryanmusicbot.command.music.skip;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.antiborov.abgaryanmusicbot.command.SlashCommand;
 import ru.antiborov.abgaryanmusicbot.domain.music.GuildMusicManager;
 import ru.antiborov.abgaryanmusicbot.domain.music.factory.GuildMusicManagerFactory;
 
-@Component("skip")
+import static ru.antiborov.abgaryanmusicbot.command.Commands.SKIP;
+
+@Component
 public class Skip implements SlashCommand {
     private final GuildMusicManagerFactory guildMusicManagerFactory;
 
@@ -25,7 +25,7 @@ public class Skip implements SlashCommand {
         GuildMusicManager manager = guildMusicManagerFactory.getInstance(event);
         AudioPlayer audioPlayer = manager.getAudioPlayer();
 
-        manager.getTrackScheduler().onTrackEnd(audioPlayer, audioPlayer.getPlayingTrack(), AudioTrackEndReason.FINISHED);
+        manager.getTrackScheduler().skip();
         AudioTrack track = audioPlayer.getPlayingTrack();
         if (track == null) {
             event.reply("queue has ended").queue();
@@ -37,8 +37,8 @@ public class Skip implements SlashCommand {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("skip", getDescription());
+    public String getName() {
+        return SKIP.fullName;
     }
 
     @Override

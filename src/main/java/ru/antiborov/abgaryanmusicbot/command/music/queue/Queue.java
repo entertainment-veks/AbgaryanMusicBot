@@ -2,7 +2,6 @@ package ru.antiborov.abgaryanmusicbot.command.music.queue;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.antiborov.abgaryanmusicbot.command.SlashCommand;
@@ -12,7 +11,9 @@ import ru.antiborov.abgaryanmusicbot.domain.music.factory.GuildMusicManagerFacto
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-@Component("queue")
+import static ru.antiborov.abgaryanmusicbot.command.Commands.QUEUE;
+
+@Component
 public class Queue implements SlashCommand {
     private final GuildMusicManagerFactory guildMusicManagerFactory;
 
@@ -21,7 +22,6 @@ public class Queue implements SlashCommand {
         this.guildMusicManagerFactory = guildMusicManagerFactory;
     }
 
-    @SuppressWarnings("ConstantConditions") // Command is Guild Only
     @Override
     public void process(SlashCommandEvent event) {
         GuildMusicManager manager = guildMusicManagerFactory.getInstance(event);
@@ -48,8 +48,8 @@ public class Queue implements SlashCommand {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("queue", getDescription());
+    public String getName() {
+        return QUEUE.fullName;
     }
 
     @Override
